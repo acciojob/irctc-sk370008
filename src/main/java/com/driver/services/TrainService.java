@@ -120,7 +120,7 @@ public class TrainService {
         return oldest;
     }
 
-    public List<Integer> trainsBetweenAGivenTime(Station station, LocalTime startTime, LocalTime endTime){
+    public List<Integer>  trainsBetweenAGivenTime(Station station, LocalTime startTime, LocalTime endTime){
 
         //When you are at a particular station you need to find out the number of trains that will pass through a given station
         //between a particular time frame both start time and end time included.
@@ -132,17 +132,22 @@ public class TrainService {
 
         List<Train> trains = trainRepository.findAll();
 
-        int startTimeInt = convertTimeToInt(startTime);
-        int endTimeInt = convertTimeToInt(endTime);
+//        int startTimeInt = convertTimeToInt(startTime);
+//        int endTimeInt = convertTimeToInt(endTime);
 
         for (Train train :trains){
-            int departureTime = convertTimeToInt(train.getDepartureTime());
-            if (departureTime>=startTimeInt && departureTime <=endTimeInt){
+//            int departureTime = convertTimeToInt(train.getDepartureTime());
+            if ((train.getDepartureTime().compareTo(startTime) == 1) && train.getDepartureTime().compareTo(endTime) == -1){
+                trainsBetweenTime.add(train.getTrainId());
+            }else if ((train.getDepartureTime().compareTo(startTime) == 0) || (train.getDepartureTime().compareTo(endTime) == 0)){
                 trainsBetweenTime.add(train.getTrainId());
             }
         }
 
+//        int val = endTime.compareTo(startTime);
+
         return trainsBetweenTime;
+//        return val;
     }
 
     public int convertTimeToInt(LocalTime time){
@@ -157,5 +162,7 @@ public class TrainService {
         }
         return timeToReturn;
     }
+
+
 
 }
