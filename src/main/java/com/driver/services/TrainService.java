@@ -137,7 +137,7 @@ public class TrainService {
 
         for (Train train :trains){
             int departureTime = convertTimeToInt(train.getDepartureTime());
-            if (departureTime>startTimeInt && departureTime <endTimeInt){
+            if (departureTime>=startTimeInt && departureTime <=endTimeInt){
                 trainsBetweenTime.add(train.getTrainId());
             }
         }
