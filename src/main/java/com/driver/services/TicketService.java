@@ -44,38 +44,44 @@ public class TicketService {
         //Also in the passenger Entity change the attribute bookedTickets by using the attribute bookingPersonId.
        //And the end return the ticketId that has come from db
 
+
+
+        //Throw exception less tickets are available
         Train train = trainRepository.findById(bookTicketEntryDto.getTrainId()).get();
-
-
         int noOfAvailableTickets = train.getNoOfSeats() - train.getBookedTickets().size();
         if (noOfAvailableTickets < bookTicketEntryDto.getNoOfSeats()){
             throw new Exception("Less tickets are available");
         }
 
+
+//        //Throw exception Invalid stations
         String listOfStations = train.getRoute();
         String[] listOfStationsArr = listOfStations.split(",");
-        boolean isSourceStationPresent = false;
-        boolean isDestinationStationPresent = false;
-        for (String stationName : listOfStationsArr){
-            if (stationName.equals(bookTicketEntryDto.getFromStation().toString())){
-                isSourceStationPresent = true;
-            }
+//        boolean isSourceStationPresent = false;
+//        boolean isDestinationStationPresent = false;
+//        for (String stationName : listOfStationsArr){
+//            if (stationName.equals(bookTicketEntryDto.getFromStation().toString())){
+//                isSourceStationPresent = true;
+//            }
+//
+//            if (stationName.equals(bookTicketEntryDto.getToStation().toString())){
+//                isDestinationStationPresent = true;
+//            }
+//        }
+//
+//        if ((!isSourceStationPresent && !isDestinationStationPresent) ||
+//                (!isSourceStationPresent && isDestinationStationPresent) ||
+//                (isSourceStationPresent && !isDestinationStationPresent)){
+//                   throw new Exception("Invalid stations");
+//        }
 
-            if (stationName.equals(bookTicketEntryDto.getToStation().toString())){
-                isDestinationStationPresent = true;
-            }
-        }
 
-        if (!isSourceStationPresent && !isDestinationStationPresent ||
-                !isSourceStationPresent && isDestinationStationPresent ||
-                isSourceStationPresent && !isDestinationStationPresent){
-                   throw new Exception("Invalid stations");
-        }
 
         List<Ticket> bookedTickets = train.getBookedTickets();
+        //Create a ticket
         Ticket ticket = new Ticket();
 
-        //List of passengers
+        //setting List of passengers in ticket
         List<Passenger> passengerList = new ArrayList<>();
         List<Integer> listOfPassengerId = bookTicketEntryDto.getPassengerIds();
         for (Integer passengerId : listOfPassengerId){
@@ -83,8 +89,13 @@ public class TicketService {
             passengerList.add(passenger);
         }
         ticket.setPassengersList(passengerList);
+
+        //setting train in ticket
         ticket.setTrain(train);
+
+        //setting fromStation in ticket
         ticket.setFromStation(bookTicketEntryDto.getFromStation());
+
         //Fare calculation
         int travelledStations = 0;
         int startStationIndex = -1;
@@ -99,9 +110,14 @@ public class TicketService {
         }
         travelledStations = endStationIndex - startStationIndex;
         int totalFare = passengerList.size() * travelledStations*300;
+
+        //setting fare in ticket
         ticket.setTotalFare(totalFare);
 
+        //setting toStation in ticket
         ticket.setToStation(bookTicketEntryDto.getToStation());
+
+        trainRepository.save(train);
 
         bookedTickets.add(ticket);
 
@@ -109,10 +125,10 @@ public class TicketService {
         List<Ticket> ticketsBookedByPassenger = passenger.getBookedTickets();
         ticketsBookedByPassenger.add(ticket);
 
-
         ticketRepository.save(ticket);
-
         return ticket.getTicketId();
 
+//        return 456789;
     }
+
 }
