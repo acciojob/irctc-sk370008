@@ -26,7 +26,20 @@ public class TrainService {
         //and route String logic to be taken from the Problem statement.
         //Save the train and return the trainId that is generated from the database.
         //Avoid using the lombok library
-        return null;
+
+        Train train = new Train();
+        List<Station> stations = trainEntryDto.getStationRoute();
+        String stringStation = "";
+        for (Station station : stations){
+            stringStation += station.toString() + ",";
+        }
+
+        train.setRoute(stringStation);
+        train.setDepartureTime(trainEntryDto.getDepartureTime());
+        train.setNoOfSeats(trainEntryDto.getNoOfSeats());
+
+        trainRepository.save(train);
+        return train.getTrainId();
     }
 
     public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto){
@@ -71,7 +84,34 @@ public class TrainService {
         //in problem statement)
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
 
-        return null;
+        List<Integer> trainsBetweenTime = new ArrayList<>();
+
+        List<Train> trains = trainRepository.findAll();
+
+        int startTimeInt = convertTimeToInt(startTime);
+        int endTimeInt = convertTimeToInt(endTime);
+
+        for (Train train :trains){
+            int departureTime = convertTimeToInt(train.getDepartureTime());
+            if (departureTime>startTimeInt && departureTime <endTimeInt){
+                trainsBetweenTime.add(train.getTrainId());
+            }
+        }
+
+        return trainsBetweenTime;
+    }
+
+    public int convertTimeToInt(LocalTime time){
+        int timeToReturn = 0;
+        if (!time.equals(null)){
+        String timeStr = time.toString();
+        String[] timeStrArr = timeStr.split(":");
+
+        timeToReturn = Integer.parseInt(timeStrArr[0]) * 60 + Integer.parseInt(timeStrArr[1]);
+
+
+        }
+        return timeToReturn;
     }
 
 }

@@ -67,6 +67,8 @@ public class TrainController {
     public List<Integer> calculateListOfTrainIdsAtAStationInAParticularTimeRange(@RequestParam("station")Station station,
                                                                                  @RequestParam("startTime")LocalTime startTime
                                                                                  ,@RequestParam("endTime")LocalTime endTime){
+//        startTime = LocalTime.of(10,00,00);
+//        endTime = LocalTime.of(14,00,00);
 
         return trainService.trainsBetweenAGivenTime(station,startTime,endTime);
     }
