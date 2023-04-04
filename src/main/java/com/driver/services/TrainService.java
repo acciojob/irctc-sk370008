@@ -132,16 +132,26 @@ public class TrainService {
 
         List<Train> trains = trainRepository.findAll();
 
-//        int startTimeInt = convertTimeToInt(startTime);
-//        int endTimeInt = convertTimeToInt(endTime);
 
         for (Train train :trains){
-//            int departureTime = convertTimeToInt(train.getDepartureTime());
-            if ((train.getDepartureTime().compareTo(startTime) == 1) && train.getDepartureTime().compareTo(endTime) == -1){
-                trainsBetweenTime.add(train.getTrainId());
-            }else if ((train.getDepartureTime().compareTo(startTime) == 0) || (train.getDepartureTime().compareTo(endTime) == 0)){
-                trainsBetweenTime.add(train.getTrainId());
+            String stations = train.getRoute();
+            String[] stationsList = stations.split(",");
+
+            for (int i = 0;i<stationsList.length;i++){
+                int stationIndex = -1;
+                if (stationsList[i].equals(station.toString())){
+                    stationIndex = i;
+                    LocalTime trainTime = train.getDepartureTime().plusHours(i);
+                    if ((trainTime.compareTo(startTime) == 1) && trainTime.compareTo(endTime) == -1){
+                        trainsBetweenTime.add(train.getTrainId());
+                    }else if ((trainTime.compareTo(startTime) == 0) || (trainTime.compareTo(endTime) == 0)){
+                        trainsBetweenTime.add(train.getTrainId());
+                    }
+                }
+
             }
+
+
         }
 
 //        int val = endTime.compareTo(startTime);

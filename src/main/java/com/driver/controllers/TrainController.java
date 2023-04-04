@@ -65,10 +65,10 @@ public class TrainController {
 
     @GetMapping("get-list-of-trains-arriving-in-a-range-of-time")
     public List<Integer> calculateListOfTrainIdsAtAStationInAParticularTimeRange(@RequestParam("station")Station station,
-                                                                                 @RequestParam("startTime")LocalTime startTime
-                                                                                 ,@RequestParam("endTime")LocalTime endTime){
-//        startTime = LocalTime.of(11,30,00);
-//        endTime = LocalTime.of(12,00,00);
+                                                                                 /*@RequestParam("startTime")*/LocalTime startTime
+                                                                                 ,/*@RequestParam("endTime")*/LocalTime endTime){
+        startTime = LocalTime.of(11,30,00);
+        endTime = LocalTime.of(12,00,00);
 
         return trainService.trainsBetweenAGivenTime(station,startTime,endTime);
     }
