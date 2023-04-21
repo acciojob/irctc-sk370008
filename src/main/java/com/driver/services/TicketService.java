@@ -105,7 +105,7 @@ public class TicketService {
         ticket.setTotalFare(totalFare);
 
 
-        ticketRepository.save(ticket);
+        ticket = ticketRepository.save(ticket);
 
         List<Ticket> bookedTicketsTrain = train.getBookedTickets();
         bookedTicketsTrain.add(ticket);
