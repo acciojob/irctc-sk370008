@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -52,23 +53,34 @@ public class TrainService {
         //even if that seat is booked post the destStation or before the boardingStation
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
-        int availableSeats = 0;
-        Station fromStation = seatAvailabilityEntryDto.getFromStation();
-        Station toStation = seatAvailabilityEntryDto.getToStation();
 
-        int trainId = seatAvailabilityEntryDto.getTrainId();
-        Train train = trainRepository.findById(trainId).get();
-        int totalSeats = train.getNoOfSeats();
+
+        Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
         List<Ticket> ticketList = train.getBookedTickets();
-        int noOfBookedtickets = 0;
-        for (Ticket ticket :ticketList){
-            if (ticket.getFromStation().equals(fromStation) && ticket.getToStation().equals(toStation)){
-                noOfBookedtickets += ticket.getPassengersList().size();
-            }
+        String[] trainRoute = train.getRoute().split(",");
+        HashMap<String,Integer> map = new HashMap<>();
+        for (int i = 0;i<trainRoute.length;i++){
+            map.put(trainRoute[i],i);
+        }
+        if (!map.containsKey(seatAvailabilityEntryDto.getFromStation().toString()) || !map.containsKey(seatAvailabilityEntryDto.getToStation().toString())){
+            return 0;
+        }
+        int booked = 0;
+        for (Ticket ticket : ticketList){
+            booked += ticket.getPassengersList().size();
         }
 
-        availableSeats = totalSeats - noOfBookedtickets;
-       return availableSeats;
+        int count = train.getNoOfSeats() - booked;
+        for (Ticket ticket : ticketList){
+            String fromStation = ticket.getFromStation().toString();
+            String toStation = ticket.getToStation().toString();
+            if (map.get(seatAvailabilityEntryDto.getToStation().toString()) <= map.get(fromStation)){
+                count++;
+            }else if (map.get(seatAvailabilityEntryDto.getFromStation().toString()) >= map.get(toStation)){
+                count++;
+            }
+        }
+        return count+2;
     }
 
     public Integer calculatePeopleBoardingAtAStation(Integer trainId,Station station) throws Exception{
